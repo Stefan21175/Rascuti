@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Расцути - дневник на добросостојба</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f6f8f6;
+    color: #2b332f;
+    margin: 0;
+    padding: 0;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px 50px;
+  }
+
+  header {
+    background-color: #3f8f5f;
+    color: white;
+    padding: 34px 20px;
+    text-align: center;
+    margin-bottom: 34px;
+  }
+
+  header h1 {
+    margin: 0 0 6px 0;
+    font-size: 29px;
+    letter-spacing: 0.2px;
+  }
+
+  header p {
+    margin: 0;
+    font-size: 13.5px;
+    opacity: 0.85;
+  }
+
+  .intro {
+    background-color: white;
+    border: 1px solid #e2e8e4;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 38px;
+    font-size: 14px;
+    color: #4a534e;
+  }
+
+  h2 {
+    font-size: 19px;
+    font-weight: 600;
+    color: #2b332f;
+    margin: 0 0 5px 0;
+  }
+
+  .section-num {
+    color: #3f8f5f;
+    font-weight: 700;
+    margin-right: 8px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+
+  .section-note {
+    font-size: 13px;
+    color: #7a827d;
+    margin: 0 0 16px 0;
+  }
+
+  .box {
+    background-color: white;
+    border: 1px solid #e2e8e4;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 38px;
+  }
+
+  /* Расположение */
+  .mood-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .mood-btn {
+    flex: 1;
+    min-width: 78px;
+    background-color: #f6f8f6;
+    border: 1px solid #d7e0da;
+    border-radius: 8px;
+    padding: 11px 6px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    color: #4a534e;
+    transition: border-color 0.15s ease;
+  }
+
+  .mood-btn:hover {
+    border-color: #3f8f5f;
+  }
+
+  .mood-btn.active {
+    background-color: #3f8f5f;
+    color: white;
+    border-color: #3f8f5f;
+  }
+
+  .mood-btn .emo {
+    font-size: 22px;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 88px;
+    border-top: 1px dashed #e2e8e4;
+    padding-top: 12px;
+  }
+
+  .chart-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chart-bar {
+    width: 100%;
+    max-width: 22px;
+    background-color: #d9e8de;
+    border-radius: 4px 4px 2px 2px;
+    transition: height 0.3s ease;
+  }
+
+  .chart-bar.filled {
+    background-color: #3f8f5f;
+  }
+
+  .chart-day {
+    font-size: 10.5px;
+    color: #9aa19c;
+  }
+
+  /* Предизвици */
+  .challenge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .challenge {
+    border: 1px solid #e2e8e4;
+    border-radius: 8px;
+    padding: 13px;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .challenge:hover {
+    border-color: #3f8f5f;
+  }
+
+  .challenge.done {
+    background-color: #eef6f0;
+    border-color: #3f8f5f;
+  }
+
+  .check {
+    width: 19px;
+    height: 19px;
+    border: 2px solid #d7e0da;
+    border-radius: 5px;
+    flex: 0 0 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: white;
+    margin-top: 2px;
+    transition: all 0.15s ease;
+  }
+
+  .challenge.done .check {
+    background-color: #3f8f5f;
+    border-color: #3f8f5f;
+  }
+
+  .challenge h4 {
+    margin: 0 0 3px 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .challenge p {
+    margin: 0;
+    font-size: 12px;
+    color: #7a827d;
+  }
+
+  .progress-outer {
+    background-color: #e9edea;
+    border-radius: 20px;
+    height: 15px;
+    overflow: hidden;
+  }
+
+  .progress-inner {
+    background-color: #3f8f5f;
+    height: 100%;
+    width: 0%;
+    text-align: right;
+    padding-right: 8px;
+    color: white;
+    font-size: 10px;
+    line-height: 15px;
+    white-space: nowrap;
+    transition: width 0.3s ease;
+  }
+
+  /* Статистика */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+    gap: 12px;
+  }
+
+  .stat-box {
+    border: 1px solid #e2e8e4;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: white;
+  }
+
+  .stat-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #3f8f5f;
+  }
+
+  .stat-text {
+    font-size: 12.5px;
+    margin-top: 7px;
+    color: #4a534e;
+  }
+
+  .stat-source {
+    font-size: 10.5px;
+    color: #9aa19c;
+    margin-top: 7px;
+  }
+
+  /* Поддршка */
+  .support-row {
+    display: flex;
+    gap: 13px;
+    padding: 11px 0;
+    border-bottom: 1px dashed #e2e8e4;
+  }
+
+  .support-row:last-child {
+    border-bottom: none;
+  }
+
+  .support-icon {
+    font-size: 19px;
+    flex: 0 0 26px;
+  }
+
+  .support-row h4 {
+    margin: 0 0 3px 0;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  .support-row p {
+    margin: 0;
+    font-size: 12px;
+    color: #7a827d;
+  }
+
+  /* Совети */
+  .tip-box {
+    border-left: 3px solid #3f8f5f;
+    background-color: white;
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 9px;
+    font-size: 13px;
+    color: #4a534e;
+  }
+
+  .tip-tag {
+    color: #3f8f5f;
+    font-weight: 600;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 11.5px;
+    color: #9aa19c;
+    margin-top: 10px;
+    padding: 18px;
+    border-top: 1px solid #e2e8e4;
+  }
+
+  /* Квиз */
+  .quiz-question {
+    margin-bottom: 18px;
+  }
+
+  .quiz-question p {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .quiz-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .quiz-opt {
+    flex: 1;
+    min-width: 90px;
+    background-color: #f6f8f6;
+    border: 1px solid #d7e0da;
+    border-radius: 8px;
+    padding: 9px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: #4a534e;
+    transition: border-color 0.15s ease;
+  }
+
+  .quiz-opt:hover {
+    border-color: #3f8f5f;
+  }
+
+  .quiz-opt.selected {
+    background-color: #3f8f5f;
+    color: white;
+    border-color: #3f8f5f;
+  }
+
+  .quiz-btn {
+    background-color: #3f8f5f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+
+  .quiz-btn:hover {
+    background-color: #357a51;
+  }
+
+  .quiz-result {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 8px;
+    background-color: #eef6f0;
+    border: 1px solid #3f8f5f;
+    font-size: 13.5px;
+    display: none;
+  }
+
+  /* Ресурси */
+  .resource-row {
+    display: flex;
+    gap: 13px;
+    padding: 11px 0;
+    border-bottom: 1px dashed #e2e8e4;
+    align-items: flex-start;
+  }
+
+  .resource-row:last-child {
+    border-bottom: none;
+  }
+
+  .resource-icon {
+    font-size: 19px;
+    flex: 0 0 26px;
+  }
+
+  .resource-row h4 {
+    margin: 0 0 3px 0;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  .resource-row p {
+    margin: 0;
+    font-size: 12px;
+    color: #7a827d;
+  }
+
+  .resource-row a {
+    color: #3f8f5f;
+    font-size: 12px;
+  }
+
+  /* Контакт форма */
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    border: 1px solid #d7e0da;
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #2b332f;
+    background-color: #f6f8f6;
+  }
+
+  .form-group textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
+
+  .form-note {
+    font-size: 11.5px;
+    color: #9aa19c;
+    margin: 0 0 14px 0;
+  }
+
+  .form-success {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background-color: #eef6f0;
+    border: 1px solid #3f8f5f;
+    font-size: 13px;
+    display: none;
+  }
+
+  footer a {
+    color: #3f8f5f;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Расцути</h1>
+  <p>Дигитален дневник за добросостојба на младите - инспириран од HBSC студијата</p>
+</header>
+
+<div class="container">
+
+  <div class="intro">
+    Оваа веб-апликација им помага на учениците на возраст 11-15 години да го следат своето расположение,
+    да исполнуваат мали дневни навики за добросостојба и да добијат корисни информации и совети,
+    според темите обработени во HBSC (Health Behaviour in School-aged Children) истражувањето.
+  </div>
+
+  <h2><span class="section-num">01</span>Како се чувствуваш денес?</h2>
+  <p class="section-note">Препознавањето и именувањето на емоциите е прв чекор кон подобра емоционална писменост.</p>
+  <div class="box">
+    <div class="mood-buttons" id="moodRow"></div>
+    <div class="chart" id="chart"></div>
+  </div>
+
+  <h2><span class="section-num">02</span>Дневни предизвици за добросостојба</h2>
+  <p class="section-note">Шест мали навики поврзани со темите од HBSC: спиење, движење, екрани, поврзаност, благодарност и смирување.</p>
+  <div class="box">
+    <div class="challenge-grid" id="chalGrid"></div>
+    <div class="progress-outer">
+      <div class="progress-inner" id="progFill">0/6</div>
+    </div>
+  </div>
+
+  <h2><span class="section-num">03</span>HBSC во бројки</h2>
+  <p class="section-note">Наодите од меѓународната и македонската HBSC студија покажуваат зошто овие теми се важни за твојата возраст.</p>
+  <div class="stat-grid" id="statGrid"></div>
+
+  <h2 style="margin-top:35px"><span class="section-num">04</span>Каде да побараш поддршка</h2>
+  <p class="section-note">Ако некој ден е потежок од останатите, овие чекори секогаш се на располагање.</p>
+  <div class="box" id="supportGrid"></div>
+
+  <h2><span class="section-num">05</span>Брзи совети</h2>
+  <p class="section-note">Кратки, практични насоки за секоја тема.</p>
+  <div id="tipsGrid"></div>
+
+  <h2><span class="section-num">06</span>Мини-самопроценка</h2>
+  <p class="section-note">Одговори на неколку кратки прашања за да добиеш општа насока за твоето моментално ниво на добросостојба.</p>
+  <div class="box">
+    <div id="quizGrid"></div>
+    <button class="quiz-btn" id="quizSubmit">Прикажи резултат</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+
+  <h2><span class="section-num">07</span>Ресурси и линкови</h2>
+  <p class="section-note">Веб-страници и апликации каде можеш да најдеш повеќе информации за ментално здравје и добросостојба на младите.</p>
+  <div class="box" id="resourceGrid"></div>
+
+  <h2><span class="section-num">08</span>Прашање или коментар</h2>
+  <p class="section-note">Можеш анонимно да испратиш прашање, коментар или предлог.</p>
+  <div class="box">
+    <div class="form-group">
+      <label for="contactTopic">Тема</label>
+      <select id="contactTopic">
+        <option>Стрес и училишни обврски</option>
+        <option>Сон</option>
+        <option>Физичка активност</option>
+        <option>Врсници и социјална поврзаност</option>
+        <option>Друго</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="contactMsg">Порака (анонимно)</label>
+      <textarea id="contactMsg" placeholder="Напиши го твоето прашање или коментар тука..."></textarea>
+    </div>
+    <p class="form-note">Оваа форма е дел од демо-верзијата на проектот - пораките не се испраќаат никаде, туку само се прикажува потврда.</p>
+    <button class="quiz-btn" id="contactSubmit">Испрати</button>
+    <div class="form-success" id="contactSuccess">Фала! Твојата порака е забележана.</div>
+  </div>
+
+</div>
+
+<footer>
+  Проект инспириран од <a href="https://hbsc.org" target="_blank">HBSC International Study</a>
+  и <a href="https://www.mkhbsc.com" target="_blank">MK HBSC Platform</a>.<br>
+  Дополнителна задача по ПНУВ
+</footer>
+
+<script>
+  const days = ["Пон","Вто","Сре","Чет","Пет","Саб","Нед"];
+
+  const moodScale = [
+    {emo:"😔", label:"Тешко", val:1},
+    {emo:"😕", label:"Малку тешко", val:2},
+    {emo:"😐", label:"Во ред", val:3},
+    {emo:"🙂", label:"Добро", val:4},
+    {emo:"😄", label:"Одлично", val:5}
+  ];
+
+  let moodHistory = [3, 4, 2, 4, 3, 5, null]; // последниот ден (денес) е празен
+  const todayIndex = 6;
+
+  const challenges = [
+    {title:"Спиев доволно", desc:"Барем 8 часа сон вечерва.", icon:"🌙", done:false},
+    {title:"Бев физички активен/на", desc:"30 минути движење или спорт.", icon:"🏃", done:false},
+    {title:"Балансирав екрани", desc:"Пауза од екран пред спиење.", icon:"📵", done:false},
+    {title:"Се поврзав со некого", desc:"Разговор со пријател или семејство.", icon:"💬", done:false},
+    {title:"Забележав едно добро нешто", desc:"Мало нешто што те израдувало денес.", icon:"✨", done:false},
+    {title:"Пауза за смирување", desc:"5 минути тишина, дишење или музика.", icon:"🧘", done:false}
+  ];
+
+  const stats = [
+    {num:"1/3", text:"од адолесцентите пријавуваат чувство на притисок од училишни обврски барем неделно.", source:"HBSC - школски стрес"},
+    {num:"↓", text:"физичката активност опаѓа со возраста, особено кај девојчињата на 13-15 год.", source:"HBSC - физичка активност"},
+    {num:"⏰", text:"голем дел од младите спијат помалку од препорачаните часови во училишни денови.", source:"HBSC - навики за спиење"},
+    {num:"💬", text:"поддршката од пријатели е поврзана со повисоко ниво на животно задоволство.", source:"HBSC - врсници и поддршка"}
+  ];
+
+  const support = [
+    {icon:"👨‍👩‍👧", title:"Разговарај со возрасен на доверба", text:"Родител, наставник или педагог/психолог во училиштето."},
+    {icon:"🧑‍⚕️", title:"Училишен психолог / педагог", text:"Секое училиште има стручна служба со која може да се разговара доверливо."},
+    {icon:"📞", title:"Национална телефонска линија", text:"Постојат бесплатни и анонимни линии за поддршка на млади - прашај наставник за тековниот број."},
+    {icon:"🤝", title:"Пријател или соученик", text:"Не мора да чекаш „голем\" проблем - дури и мал разговор може да олесни."}
+  ];
+
+  const tips = [
+    {tag:"Стрес", text:"Кога чувствуваш притисок пред тест, обиди се со 4 длабоки вдишувања."},
+    {tag:"Сон", text:"Обиди се да легнуваш во исто време секоја вечер."},
+    {tag:"Дигитална благосостојба", text:"Исклучи екрани 30 минути пред спиење."},
+    {tag:"Врсници", text:"Мал гест, порака или „здраво\", е доволен некој да се почувствува поврзан."},
+    {tag:"Самодоверба", text:"Запиши едно нешто што ти успеа денес."},
+    {tag:"Булинг", text:"Ако видиш некого исклучен или навреден, поддршката од еден врсник прави разлика."}
+  ];
+
+  // ---- Расположение ----
+  const moodRow = document.getElementById("moodRow");
+  moodScale.forEach(m => {
+    const btn = document.createElement("div");
+    btn.className = "mood-btn";
+    btn.innerHTML = `<span class="emo">${m.emo}</span>${m.label}`;
+    btn.addEventListener("click", () => {
+      moodHistory[todayIndex] = m.val;
+      document.querySelectorAll(".mood-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      drawChart();
+    });
+    moodRow.appendChild(btn);
+  });
+
+  function drawChart() {
+    const chart = document.getElementById("chart");
+    chart.innerHTML = "";
+    moodHistory.forEach((v, i) => {
+      const col = document.createElement("div");
+      col.className = "chart-col";
+      const height = v ? (v / 5 * 70 + 10) : 6;
+      col.innerHTML = `<div class="chart-bar ${v ? "filled" : ""}" style="height:${height}px"></div><span class="chart-day">${days[i]}</span>`;
+      chart.appendChild(col);
+    });
+  }
+  drawChart();
+
+  // ---- Предизвици ----
+  const chalGrid = document.getElementById("chalGrid");
+
+  function drawChallenges() {
+    chalGrid.innerHTML = "";
+    challenges.forEach(c => {
+      const div = document.createElement("div");
+      div.className = "challenge" + (c.done ? " done" : "");
+      div.innerHTML = `
+        <div class="check">${c.done ? "✓" : ""}</div>
+        <div>
+          <h4>${c.icon} ${c.title}</h4>
+          <p>${c.desc}</p>
+        </div>`;
+      div.addEventListener("click", () => {
+        c.done = !c.done;
+        drawChallenges();
+        drawProgress();
+      });
+      chalGrid.appendChild(div);
+    });
+  }
+
+  function drawProgress() {
+    const doneCount = challenges.filter(c => c.done).length;
+    const percent = Math.round((doneCount / challenges.length) * 100);
+    const bar = document.getElementById("progFill");
+    bar.style.width = percent + "%";
+    bar.textContent = `${doneCount}/${challenges.length}`;
+  }
+
+  drawChallenges();
+  drawProgress();
+
+  // ---- Статистика ----
+  const statGrid = document.getElementById("statGrid");
+  stats.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "stat-box";
+    div.innerHTML = `<div class="stat-num">${s.num}</div><div class="stat-text">${s.text}</div><div class="stat-source">${s.source}</div>`;
+    statGrid.appendChild(div);
+  });
+
+  // ---- Поддршка ----
+  const supportGrid = document.getElementById("supportGrid");
+  support.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "support-row";
+    div.innerHTML = `<div class="support-icon">${s.icon}</div><div><h4>${s.title}</h4><p>${s.text}</p></div>`;
+    supportGrid.appendChild(div);
+  });
+
+  // ---- Совети ----
+  const tipsGrid = document.getElementById("tipsGrid");
+  tips.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "tip-box";
+    div.innerHTML = `<span class="tip-tag">${t.tag}:</span> ${t.text}`;
+    tipsGrid.appendChild(div);
+  });
+
+  // ---- Мини-самопроценка ----
+  const quizQuestions = [
+    {
+      q: "Колку често во последно време се чувствуваш под стрес поради училиште?",
+      options: [{label:"Ретко", val:1}, {label:"Понекогаш", val:2}, {label:"Често", val:3}]
+    },
+    {
+      q: "Како би го оценил/а квалитетот на твојот сон?",
+      options: [{label:"Добар", val:1}, {label:"Средно добар", val:2}, {label:"Слаб", val:3}]
+    },
+    {
+      q: "Дали имаш некого со кого можеш слободно да разговараш?",
+      options: [{label:"Да, секогаш", val:1}, {label:"Понекогаш", val:2}, {label:"Ретко", val:3}]
+    },
+    {
+      q: "Колку често си физички активен/на (спорт, движење)?",
+      options: [{label:"Скоро секој ден", val:1}, {label:"Понекогаш", val:2}, {label:"Речиси никогаш", val:3}]
+    }
+  ];
+
+  const quizAnswers = {};
+
+  const quizGrid = document.getElementById("quizGrid");
+  quizQuestions.forEach((qItem, qIndex) => {
+    const div = document.createElement("div");
+    div.className = "quiz-question";
+    const optsHtml = qItem.options.map((o, oIndex) =>
+      `<div class="quiz-opt" data-q="${qIndex}" data-val="${o.val}">${o.label}</div>`
+    ).join("");
+    div.innerHTML = `<p>${qIndex + 1}. ${qItem.q}</p><div class="quiz-options">${optsHtml}</div>`;
+    quizGrid.appendChild(div);
+  });
+
+  document.querySelectorAll(".quiz-opt").forEach(opt => {
+    opt.addEventListener("click", () => {
+      const qIndex = opt.getAttribute("data-q");
+      quizAnswers[qIndex] = parseInt(opt.getAttribute("data-val"));
+      document.querySelectorAll(`.quiz-opt[data-q="${qIndex}"]`).forEach(o => o.classList.remove("selected"));
+      opt.classList.add("selected");
+    });
+  });
+
+  document.getElementById("quizSubmit").addEventListener("click", () => {
+    const answeredCount = Object.keys(quizAnswers).length;
+    const resultBox = document.getElementById("quizResult");
+    if (answeredCount < quizQuestions.length) {
+      resultBox.style.display = "block";
+      resultBox.innerHTML = "Одговори на сите прашања за да го видиш резултатот.";
+      return;
+    }
+    const total = Object.values(quizAnswers).reduce((sum, v) => sum + v, 0);
+    let message = "";
+    if (total <= 6) {
+      message = "Изгледа дека моментално се чувствуваш прилично добро. Продолжи со здравите навики!";
+    } else if (total <= 9) {
+      message = "Имаш неколку области кои би можеле да се подобрат - погледни ги советите и предизвиците погоре.";
+    } else {
+      message = "Изгледа дека минуваш низ потежок период. Размисли да разговараш со некој возрасен на доверба - погледни ја секцијата „Каде да побараш поддршка\".";
+    }
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `<b>Резултат: ${total}/12</b><br>${message}`;
+  });
+
+  // ---- Ресурси и линкови ----
+  const resources = [
+    {icon:"🌐", title:"HBSC International Study", text:"Официјална страница на меѓународната студија за здравје и однесување кај учениците.", url:"https://hbsc.org"},
+    {icon:"🇲🇰", title:"MK HBSC Platform", text:"Македонска платформа со податоци и наоди од HBSC истражувањето.", url:"https://www.mkhbsc.com"},
+    {icon:"📱", title:"Апликации за смирување и медитација", text:"Пребарај апликации како Headspace или Calm за вежби за дишење и релаксација."},
+    {icon:"📚", title:"Материјали за ментално здравје на млади", text:"Прашај во училишната библиотека или кај педагогот за препорачани брошури и водичи."}
+  ];
+
+  const resourceGrid = document.getElementById("resourceGrid");
+  resources.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "resource-row";
+    const linkHtml = r.url ? `<br><a href="${r.url}" target="_blank">${r.url}</a>` : "";
+    div.innerHTML = `<div class="resource-icon">${r.icon}</div><div><h4>${r.title}</h4><p>${r.text}${linkHtml}</p></div>`;
+    resourceGrid.appendChild(div);
+  });
+
+  // ---- Контакт форма ----
+  document.getElementById("contactSubmit").addEventListener("click", () => {
+    const msg = document.getElementById("contactMsg").value.trim();
+    const successBox = document.getElementById("contactSuccess");
+    if (msg === "") {
+      successBox.style.display = "block";
+      successBox.style.backgroundColor = "#fbeaea";
+      successBox.style.borderColor = "#c94f4f";
+      successBox.textContent = "Ве молиме напишете порака пред да испратите.";
+      return;
+    }
+    successBox.style.display = "block";
+    successBox.style.backgroundColor = "#eef6f0";
+    successBox.style.borderColor = "#3f8f5f";
+    successBox.textContent = "Фала! Твојата порака е забележана.";
+    document.getElementById("contactMsg").value = "";
+  });
+</script>
+
+</body>
+</html>
